@@ -10,6 +10,12 @@ public class SetElement extends Trail {
         count = c;
     }
 
+    public SetElement(int k, int id) {
+        super(null, null);
+        key = k;
+        count = 0;
+    }
+
     public void increment(){
         count++;
     }

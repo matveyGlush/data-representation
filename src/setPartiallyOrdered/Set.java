@@ -7,29 +7,38 @@ public class Set {
         head = null;
     }
 
-    public boolean init(int[][] array){
-        if (array.length == 0 || array[0][0] == array[0][1])
+    public static class Pair {
+        int key;
+        int dep;
+        public Pair(int key, int dep) {
+            this.key = key;
+            this.dep = dep;
+        }
+    }
+
+    public boolean init(Pair[] pair){
+        if (pair.length == 0 || pair[0].key == pair[0].dep)
             return false;
 
-        head = new SetElement(null,null, array[0][0], 0);
-        head.setId(new SetElement(null, null, array[0][1], 0));
+        head = new SetElement(null,null, pair[0].key, 0);
+        head.setId(new SetElement(null, null, pair[0].dep, 0));
         head.setNext(new Trail(head.getId(),null));
         head.getId().increment();
 
-        for (int i = 1; i < array.length; i++) {
-            if (array[i][0] == array[i][1]){
+        for (int i = 1; i < pair.length; i++) {
+            if (pair[i].key == pair[i].dep){
                 return false;
             }
 
-            SetElement temp1 = search(array[i][0]);
-            if (temp1.getKey() != array[i][0]) {
-                temp1.setId(new SetElement(null, null, array[i][0], 0));
+            SetElement temp1 = search(pair[i].key);
+            if (temp1.getKey() != pair[i].key) {
+                temp1.setId(new SetElement(null, null, pair[i].key, 0));
                 temp1 = temp1.getId();
             }
 
-            SetElement temp2 = search(array[i][1]);
-            if (temp2.getKey() != array[i][1]){
-                temp2.setId(new SetElement(null, null, array[i][1], 0));
+            SetElement temp2 = search(pair[i].dep);
+            if (temp2.getKey() != pair[i].dep){
+                temp2.setId(new SetElement(null, null, pair[i].dep, 0));
                 temp2 = temp2.getId();
             }
 

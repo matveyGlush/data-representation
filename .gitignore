@@ -28,7 +28,8 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-.iml
-.xml
+*.iml
+*.xml
+sets.iml
 
 /.idea

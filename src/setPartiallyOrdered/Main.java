@@ -22,7 +22,6 @@ public class Main {
         });
 
         s.print();
-
         s.sort();
         System.out.println();
         s.print();

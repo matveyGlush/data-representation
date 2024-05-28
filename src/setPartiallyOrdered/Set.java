@@ -2,6 +2,7 @@ package setPartiallyOrdered;
 
 public class Set {
     private SetElement head;
+    private int length = 0;
 
     public Set(){
         head = null;
@@ -24,6 +25,7 @@ public class Set {
         head.setId(new SetElement(null, null, pair[0].dep, 0));
         head.setNext(new Trail(head.getId(),null));
         head.getId().increment();
+        length++;
 
         for (int i = 1; i < pair.length; i++) {
             if (pair[i].key == pair[i].dep){
@@ -34,12 +36,14 @@ public class Set {
             if (temp1.getKey() != pair[i].key) {
                 temp1.setId(new SetElement(null, null, pair[i].key, 0));
                 temp1 = temp1.getId();
+                length++;
             }
 
             SetElement temp2 = search(pair[i].dep);
             if (temp2.getKey() != pair[i].dep){
                 temp2.setId(new SetElement(null, null, pair[i].dep, 0));
                 temp2 = temp2.getId();
+                length++;
             }
 
             temp2.increment();
@@ -47,17 +51,19 @@ public class Set {
             Trail tempTrail = temp1.getNext();
             temp1.setNext(new Trail(temp2, tempTrail));
         }
+        length++;
 
         return true;
     }
 
-    public void sort(){
+    public boolean sort(){
+        int checkSum = 0;
         Set newSet = new Set();
         SetElement q = head;
         SetElement q2 = null;
         SetElement lastInNewSet = null;
 
-        while (q != null){
+        while (q != null) {
             if (q.getCount() == 0){
                 Trail tempTrail = q.getNext();
                 while (tempTrail != null){
@@ -76,16 +82,17 @@ public class Set {
                 }
 
                 if (newSet.head != null){
+                    assert lastInNewSet != null;
                     SetElement temp = lastInNewSet.getId();
                     lastInNewSet.setId(temporary);
                     lastInNewSet.getId().setId(temp);
                     lastInNewSet = lastInNewSet.getId();
-                }
-                else {
+                } else {
                     newSet.head = temporary;
                     newSet.head.setId(null);
                     lastInNewSet = newSet.head;
                 }
+                checkSum++;
                 q = head;
                 q2 = null;
                 continue;
@@ -93,9 +100,14 @@ public class Set {
             q2 = q;
             q = q.getId();
         }
-        print();
-        System.out.println();
+
+//        System.out.println(checkSum);
+//        System.out.println(length);
+
+        if (newSet.head == null || checkSum != length) return false;
+
         head = newSet.head;
+        return true;
     }
 
     public void print(){

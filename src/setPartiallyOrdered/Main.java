@@ -6,7 +6,6 @@ public class Main {
 
         boolean ifInitialized = s.init(new Set.Pair[] {
                 new Set.Pair(1, 2),
-                new Set.Pair(2, 4),
                 new Set.Pair(4, 6),
                 new Set.Pair(2, 10),
                 new Set.Pair(4, 8),
@@ -19,11 +18,18 @@ public class Main {
                 new Set.Pair(9, 4),
                 new Set.Pair(9, 10),
                 new Set.Pair(5, 10),
+
+                new Set.Pair(2, 1),
         });
 
-        s.print();
-        s.sort();
-        System.out.println();
-        s.print();
+        if (ifInitialized) {
+            s.print();
+            if (s.sort()) {
+                System.out.println();
+                s.print();
+            } else System.out.println("sorting error");
+        } else {
+            System.out.println("initialization error");
+        }
     }
 }

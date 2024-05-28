@@ -101,9 +101,6 @@ public class Set {
             q = q.getId();
         }
 
-//        System.out.println(checkSum);
-//        System.out.println(length);
-
         if (newSet.head == null || checkSum != length) return false;
 
         head = newSet.head;

@@ -19,7 +19,8 @@ public class Main {
                 new Set.Pair(9, 10),
                 new Set.Pair(5, 10),
 
-                new Set.Pair(2, 1),
+                // if you want exception
+//                new Set.Pair(2, 1),
         });
 
         if (ifInitialized) {

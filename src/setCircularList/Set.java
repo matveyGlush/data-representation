@@ -1,29 +1,36 @@
 package setCircularList;
 
 public class Set {
-    //копирующий конструктор и все методы изменяют входящий объект
+    // класс нода
     private static class Node{
         int number;
         Node next;
 
+        //конструктор
         public Node(int a, Node n){
             number = a;
             next = n;
         }
     }
 
-    private Node tail;
+    private Node tail; // хвост
 
+    // обычный конструктор
     public Set(){
         tail = null;
     }
 
 
+    //копирующий конструктор
     public Set(Set a){
-//      копирующий конструктор
+        // создаём хвост
         tail = new Node(a.tail.number, a.tail.next);
+
+
         Node tempA = a.tail.next;
         Node tempSelf = tail;
+
+        // идём двумя указателями
         while (tempA != a.tail){
             tempSelf.next = new Node(tempA.number, tempA.next);
             tempA = tempA.next;
@@ -33,20 +40,17 @@ public class Set {
     }
 
     public void insert(int a){
-        /*
-        Если список пустой
-        Если в списке только 1 элемент и этот элемент больше тейла
-        Если в списке только 1 элемент и этот элемент меньше тейла
-        Если элемент больше хвоста, не меняя хвост вставляем элемент
-         */
+        // елси список пустой вставляем в хвост и закольцовываем
         if (tail == null){
             tail = new Node(a, null);
             tail.next = tail;
             return;
         }
 
+        // если 1 элемент
         if (tail.next == tail){
-            if (a == tail.number) return;
+            if (a == tail.number)
+                return;
             if (a > tail.number){
                 tail.next = new Node(tail.number, tail);
                 tail.number = a;
@@ -57,10 +61,13 @@ public class Set {
             return;
         }
 
+
+        //Если элемент больше хвоста
         if (a > tail.number){
             Node temp = searchPrev(tail, tail.number);
-            if (temp == null) return;
+
             temp.next = new Node(tail.number, tail);
+
             tail.number = a;
             return;
         }
@@ -83,25 +90,22 @@ public class Set {
     public void delete(int a){
         /*
         если пустое множество - ретерн
-        если нужно удалить элемент в хвосте и в множестве НЕ один элемент - ссылки перекинуть
         если нужно удалить элемент в хвосте и в множестве один элемент - tail = null
-        если элемент не в хвосте = ищем предыдущий и перекижываем ссылки
+        в общем случае ищем предыдущий и перекижываем ссылки
          */
         if (tail == null) return;
-        if (a == tail.number) {
-            if (tail != tail.next){
-                tail = tail.next;
-                return;
-            }
 
+        if (tail == tail.next){
             tail = null;
             return;
         }
 
-        Node temp = searchPrev(tail, a);
+        Set.Node temp = searchPrev(tail, a);
 
-        if (temp != null)
-            temp.next = temp.next.next;
+        if (temp != null) {
+            tail = temp;
+            tail.next = tail.next.next;
+        }
     }
 
     public void assign(Set a){
@@ -115,19 +119,21 @@ public class Set {
             return;
         }
 
-        tail = new Node(a.tail.number, null);
-        Node tempA = tail;
+        tail = new Set.Node(a.tail.number, null);
+        Set.Node tempA = tail;
 
-        Node temp = a.tail.next;
+        Set.Node temp = a.tail.next;
 
         while (temp != a.tail){
-            tempA.next = new Node(temp.number, null);
+            tempA.next = new Set.Node(temp.number, null);
             tempA = tempA.next;
             temp = temp.next;
         }
 
         tempA.next = tail;
     }
+
+    //
     public int min(){
         int min = Integer.MAX_VALUE;
         if (tail == null) throw new myException("set is empty");
@@ -171,18 +177,18 @@ public class Set {
     }
 
     public Set union(Set a) {
+        if (this == a)
+            return null;
         Set set1 = this;
         Node head1 = set1.tail.next;
         Node head2 = a.tail.next;
         Set resultSet = new Set();
-        resultSet.tail = new Node(Math.min(head1.number, head2.number), null);
+        resultSet.tail = new Node(Math.max(set1.tail.number, a.tail.number), null);
         resultSet.tail.next = resultSet.tail;
         Node temp = resultSet.tail;
 
-        if (resultSet.tail.number == head1.number) head1 = head1.next;
-        if (resultSet.tail.number == head2.number) head2 = head2.next;
 
-        while (head1.next != set1.tail && head2.next != a.tail) {
+        while (head1 != set1.tail && head2 != a.tail) {
             if (head1.number < head2.number) {
                 temp.next = new Node(head1.number, resultSet.tail);
                 head1 = head1.next;
@@ -194,116 +200,166 @@ public class Set {
             temp = temp.next;
         }
 
-        if (head1.next == set1.tail){
+        if (head1 == set1.tail){
             while (head2 != a.tail){
-                if (head1.number < head2.number){
-                    resultSet.tail = new Node(head1.number, resultSet.tail);
-//                    resultSet.tail.next =
+                if (head1.number < head2.number) {
+                    temp.next = new Node(head1.number, resultSet.tail);
+                    head1 = head1.next;
+                    temp = temp.next;
+                    break;
+                } else {
+                    temp.next = new Node(head2.number, resultSet.tail);
+                    if (head1.number == head2.number) head1 = head1.next;
+                    head2 = head2.next;
+                    temp = temp.next;
                 }
+            }
+            while (head2 != a.tail){
                 temp.next = new Node(head2.number, resultSet.tail);
                 head2 = head2.next;
                 temp = temp.next;
             }
-            resultSet.tail = new Node(head1.next.number, resultSet.tail);
         }
         else {
+            // вставляем голову последнюю
             while (head1 != set1.tail){
-                if (head2.number < head1.number){
-                    resultSet.tail = new Node(head1.number, resultSet.tail);
+                if (head1.number < head2.number) {
+                    temp.next = new Node(head1.number, resultSet.tail);
+                    head1 = head1.next;
+                    temp = temp.next;
+                } else {
+                    temp.next = new Node(head2.number, resultSet.tail);
+                    if (head1.number == head2.number) head1 = head1.next;
+                    head2 = head2.next;
+                    temp = temp.next;
+                    break;
                 }
+            }
+            while (head1 != set1.tail) {
                 temp.next = new Node(head1.number, resultSet.tail);
                 head1 = head1.next;
                 temp = temp.next;
             }
+
+        }
+        if (head1 == set1.tail && head2 == a.tail) {
+            temp.next = new Node(Math.min(head2.number, head1.number), resultSet.tail);
         }
 
+        //.tail = new Node(Math.max(head2.number, head1.number), resultSet.tail.next);
 
         return resultSet;
     }
 
     public Set intersection(Set a){
-        /*
-        проверить не нулевые ли множества и пересекаются ли эти множества
-        определить наименьшее и наибольшее множество
-        найти начало наибольшего в наименьшем start
-        найти конец наименьшего в наибольшем end
-        создать новое множество и запоминаем его хвост
-        пойти циклом от start до end копируя по очереди элементы из множеств
-         */
-        if (a == null || tail == null) throw new myException("set is empty");
-        if (a.tail.next.number > tail.number || tail.next.number > a.tail.number) return null;
+        if (a == null || tail == null)
+            throw new myException("set is empty");
+        if (a.tail.next.number > tail.number || tail.next.number > a.tail.number)
+            return null;
+        if (a == this)
+            return this;
 
-        Set biggerSet = a.tail.next.number < tail.next.number ? this: a;
-        Set smallerSet = a.tail.next.number >= tail.next.number ? this: a;
 
-        Node biggerSetStart = biggerSet.tail.next;
-
-        Node temp = smallerSet.searchPlaceForInsert(smallerSet.tail, biggerSet.tail.next.number);
-        Node smallerSetStart = temp == null ? smallerSet.tail.next : temp.next;
-
+        Node head1 = tail.next;
+        Node head2 = a.tail.next;
         Set resultSet = new Set();
-        resultSet.tail = new Node(biggerSetStart.number, null);
-        temp = resultSet.tail;
+        resultSet.tail =  new Node(Math.min(tail.number, a.tail.number), null);
+        resultSet.tail.next = resultSet.tail;
+        Node temp = resultSet.tail;
 
-        if (smallerSetStart.number == biggerSetStart.number) smallerSetStart = smallerSetStart.next;
-        biggerSetStart = biggerSetStart.next;
-
-        while (smallerSetStart.next != smallerSet.tail || biggerSetStart.next != biggerSet.tail) {
-            if (smallerSetStart.number > biggerSetStart.number) {
-                biggerSetStart = biggerSetStart.next == null ? biggerSetStart : biggerSetStart.next;
-            }
-            else {
-                if (smallerSetStart.number == biggerSetStart.number) {
-                    temp.next = new Node(smallerSetStart.number, null);
+        while (head1 != tail && head2 != a.tail) {
+            if (head1.number < head2.number) {
+                head1 = head1.next;
+            } else {
+                if (head1.number == head2.number) {
+                    temp.next = new Node(head1.number, resultSet.tail);
                     temp = temp.next;
+                    head1 = head1.next;
                 }
-                smallerSetStart = smallerSetStart.next == null ? smallerSetStart : smallerSetStart.next;
-            }
-
-        }
-
-        if (smallerSetStart == smallerSet.tail){
-            if (smallerSetStart.number == biggerSetStart.number){
-                resultSet.tail = new Node(biggerSetStart.number, resultSet.tail);
+                head2 = head2.next;
             }
         }
+
+        //
+        if (head2 == a.tail) {
+            while (head1 != tail && head1.number < a.tail.number){
+                head1 = head1.next;
+            }
+
+            if (head1.number == a.tail.number ) {
+                return resultSet;
+            }
+        }
+        if (head1 == tail) {
+            while (head2 != a.tail && head2.number < tail.number){
+                head2 = head2.next;
+            }
+
+            if (head2.number == tail.number ) {
+                return resultSet;
+            }
+        }
+
+
+        Node prev = resultSet.searchPrev(resultSet.tail, resultSet.tail.number);
+        prev.next = resultSet.tail.next;
+        resultSet.tail = prev;
+
 
         return resultSet;
     }
 
     public Set difference(Set a) {
-        if (a == null || tail == null) throw new myException("set is empty");
-        if (a.tail.next.number > tail.number || tail.next.number > a.tail.number) return this;
+        if (a == null || tail == null)
+            throw new myException("set is empty");
+        if (a == this)
+            return new Set();;
+        if (a.tail.next.number > tail.number || tail.next.number > a.tail.number)
+            return this;
 
         Node head1 = tail.next;
         Node head2 = a.tail.next;
         Set resultSet = new Set();
-        resultSet.tail = new Node(Math.min(head1.number, head2.number), null);
+        resultSet.tail =  new Node(tail.number, null);
         resultSet.tail.next = resultSet.tail;
         Node temp = resultSet.tail;
 
-        while (head1.next != tail && head2.next != a.tail) {
+        while (head1 != tail && head2 != a.tail) {
             if (head1.number < head2.number) {
                 temp.next = new Node(head1.number, resultSet.tail);
                 head1 = head1.next;
                 temp = temp.next;
             } else {
-                if (head1.number == head2.number) head1 = head1.next;
+                if (head1.number == head2.number)
+                    head1 = head1.next;
                 head2 = head2.next;
             }
         }
 
-        head1 = head1.next;
-        if (head1 != tail.next) {
-            while (head1 != tail.next){
+        //
+        if (head1 != tail) {
+            while (head1 != tail && head1.number < a.tail.number){
                 temp.next = new Node(head1.number, resultSet.tail);
                 head1 = head1.next;
                 temp = temp.next;
             }
+
+            if (head1 != tail ) {
+                if (head1.number == a.tail.number)
+                    head1 = head1.next;
+                while (head1 != tail){
+                    temp.next = new Node(head1.number, resultSet.tail);
+                    head1 = head1.next;
+                    temp = temp.next;
+                }
+                return resultSet;
+            }
         }
 
-        if (head1.next.number == head2.next.number){
-            resultSet.tail = new Node(head1.number, resultSet.tail);
+        if (head1.number == a.tail.number) {
+            Node prev = resultSet.searchPrev(resultSet.tail, resultSet.tail.number);
+            prev.next = resultSet.tail.next;
+            resultSet.tail = prev;
         }
 
         return resultSet;
@@ -317,7 +373,8 @@ public class Set {
         //если в конце цикла не запаздывающий равен нашей искомой позиции - возвращаем запаздывающий
         Node temp = pos;
         Node temp2 = pos.next;
-        if (temp2.number == n) return temp;
+        if (temp2.number == n)
+            return temp;
 
         while (temp2 != pos){
             if (temp2.number == n)
@@ -351,8 +408,8 @@ public class Set {
         return null;
     }
 
-    private boolean member(int num) {
-        Node temp = tail.next;
+    private boolean member(Set set, int num) {
+        Node temp = set.tail.next;
         while (temp != tail) {
             if (temp.number == num) {
                 return true;
@@ -360,5 +417,14 @@ public class Set {
             temp = temp.next;
         }
         return temp.number == num;
+    }
+
+    public static Set find(Set[] sets, int x) {
+        for (Set set : sets) {
+            if (set.member(set, x)) {
+                return set;
+            }
+        }
+        return null; // Если элемент не найден ни в одном множестве
     }
 }

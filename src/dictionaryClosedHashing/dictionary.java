@@ -126,7 +126,7 @@ public class dictionary {
         int counter = 0;
         place = hashFunc(name, ++counter);
 
-        while (array[place] != null || place != start){
+        while (array[place] != null && place != start){
             if (compareCharArrays(array[place], name)) {
                 return place;
             }

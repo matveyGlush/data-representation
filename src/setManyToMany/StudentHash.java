@@ -1,7 +1,7 @@
 package setManyToMany;
 
 public class StudentHash {
-    private StudentHashElement[] array;
+    private final StudentHashElement[] array;
     private final static int SIZE = 10;
 
     public StudentHash(int a){

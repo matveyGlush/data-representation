@@ -3,7 +3,7 @@ package setManyToMany;
 public class StudentHashElement extends Pointer {
     //имя - массив чаров
     private RegistrationRecord next;
-    private char[] studName;
+    private final char[] studName;
 
     public StudentHashElement(char[] s, RegistrationRecord n) {
         studName = s;

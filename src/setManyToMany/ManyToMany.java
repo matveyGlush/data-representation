@@ -1,10 +1,10 @@
 package setManyToMany;
 
 public class ManyToMany {
-    private StudentHash studHash;
-    private CourseHash cHash;
+    private final StudentHash studHash;
+    private final CourseHash cHash;
 
-    ManyToMany(){
+    public ManyToMany(){
         studHash = new StudentHash(4);
         studHash.insert("Bob");
         studHash.insert("Alice");
@@ -34,7 +34,8 @@ public class ManyToMany {
 
         RegistrationRecord temp = new RegistrationRecord(
                 n.getNext() == null ? n : n.getNext(),
-                c.getNext() == null ? c : c.getNext());
+                c.getNext() == null ? c : c.getNext()
+        );
 
         n.setNext(temp);
         c.setNext(temp);
@@ -144,6 +145,47 @@ public class ManyToMany {
                 else course.setNext(null);
             }
             temp = ((RegistrationRecord) temp).getSNext();
+        }
+        c.setNext(null);
+    }
+
+    public void removeCourseEverywhere(int course){
+        CourseHashElement c = cHash.member(course);
+        if(c == null)
+            return;
+
+        //если студеент никуда не записан
+        if (c.getNext() == null)
+            return;
+
+        Pointer temp = c.getNext();
+
+        while (temp.hasNext()){
+            //найти курс, на который записан студент
+            StudentHashElement s = ((RegistrationRecord) temp).getSNext().hasNext() ?
+                    findStudent((RegistrationRecord) ((RegistrationRecord) temp).getSNext()) :
+                    (StudentHashElement) ((RegistrationRecord) temp).getSNext();
+
+            Pointer result = searchPrevCourse(s, course);
+
+            if (result == null)
+                continue;
+
+            //if the previous is not Course, but record
+            if (result.hasNext()) {
+                RegistrationRecord temp2 = (RegistrationRecord) result;
+                temp2.setSNext(((RegistrationRecord)temp2.getSNext()).getSNext());
+            }
+            else {
+                //if there are other registrations on this course
+                if (s.getNext().getSNext().hasNext())
+                    s.setNext((RegistrationRecord) s.getNext().getSNext());
+
+                    //only one reg and it should be deleted
+                else
+                    s.setNext(null);
+            }
+            temp = ((RegistrationRecord) temp).getCNext();
         }
         c.setNext(null);
     }

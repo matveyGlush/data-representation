@@ -1,7 +1,7 @@
 package setManyToMany;
 
 public class CourseHash {
-    CourseHashElement array[];
+    CourseHashElement[] array;
 
     public CourseHash(int a){
         array = new CourseHashElement[a];

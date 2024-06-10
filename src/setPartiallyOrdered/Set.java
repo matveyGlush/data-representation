@@ -8,12 +8,62 @@ public class Set {
         head = null;
     }
 
-    public static class Pair {
-        int key;
-        int dep;
-        public Pair(int key, int dep) {
-            this.key = key;
-            this.dep = dep;
+    public class Trail {
+        private SetElement id;
+        private Trail next;
+
+        public Trail(SetElement i, Trail n){
+            id = i;
+            next = n;
+        }
+
+        public Trail getNext() {
+            return next;
+        }
+
+        public SetElement getId() {
+            return id;
+        }
+
+        public void setId(SetElement id) {
+            this.id = id;
+        }
+
+        public void setNext(Trail next) {
+            this.next = next;
+        }
+    }
+
+    public class SetElement extends Trail {
+        private final int key;
+        private int count;
+
+        public SetElement(SetElement i, Trail n, int k, int c) {
+            super(i, n);
+            key = k;
+            count = c;
+        }
+
+        public SetElement(int k, int id) {
+            super(null, null);
+            key = k;
+            count = 0;
+        }
+
+        public void increment(){
+            count++;
+        }
+
+        public void decrement(){
+            count--;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public int getKey() {
+            return key;
         }
     }
 
@@ -110,13 +160,8 @@ public class Set {
     public void print(){
         SetElement temp = head;
         while (temp != null){
-            System.out.print("key: " + temp.getKey() + " | Count : " + temp.getCount() + " | Trail : ");
-            Trail tempT = temp.getNext();
-            while (tempT != null){
-                System.out.print(tempT.getId().getKey() + " ");
-                tempT = tempT.getNext();
-            }
-            System.out.println();
+            System.out.print(temp.getKey());
+            System.out.print(" ");
             temp = temp.getId();
         }
     }

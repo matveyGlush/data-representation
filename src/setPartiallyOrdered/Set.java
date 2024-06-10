@@ -106,7 +106,7 @@ public class Set {
         return true;
     }
 
-    public boolean sort(){
+    public boolean sort() {
         int checkSum = 0;
         Set newSet = new Set();
         SetElement q = head;
@@ -114,35 +114,20 @@ public class Set {
         SetElement lastInNewSet = null;
 
         while (q != null) {
-            if (q.getCount() == 0){
-                Trail tempTrail = q.getNext();
-                while (tempTrail != null){
-                    tempTrail.getId().decrement();
-                    tempTrail = tempTrail.getNext();
-                }
-                q.setNext(null);
-
-                SetElement temporary = q;
-                if (q == head){
-                    head = head.getId();
-                }
-                else {
-                    assert q2 != null;
-                    q2.setId(q.getId());
-                }
-
-                if (newSet.head != null){
+            if (q.getCount() == 0) {
+                SetElement removedElement = removeElementWithZeroCount(q, q2);
+                checkSum++;
+                if (newSet.head != null) {
                     assert lastInNewSet != null;
                     SetElement temp = lastInNewSet.getId();
-                    lastInNewSet.setId(temporary);
+                    lastInNewSet.setId(removedElement);
                     lastInNewSet.getId().setId(temp);
                     lastInNewSet = lastInNewSet.getId();
                 } else {
-                    newSet.head = temporary;
+                    newSet.head = removedElement;
                     newSet.head.setId(null);
                     lastInNewSet = newSet.head;
                 }
-                checkSum++;
                 q = head;
                 q2 = null;
                 continue;
@@ -155,6 +140,24 @@ public class Set {
 
         head = newSet.head;
         return true;
+    }
+
+    private SetElement removeElementWithZeroCount(SetElement q, SetElement q2) {
+        Trail tempTrail = q.getNext();
+        while (tempTrail != null) {
+            tempTrail.getId().decrement();
+            tempTrail = tempTrail.getNext();
+        }
+        q.setNext(null);
+
+        if (q == head) {
+            head = head.getId();
+        } else {
+            assert q2 != null;
+            q2.setId(q.getId());
+        }
+
+        return q;
     }
 
     public void print(){

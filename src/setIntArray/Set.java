@@ -315,25 +315,45 @@ public class Set {
         return true;
     }
 
-    private Set mergeSets(Set a){
-        Set n = new Set(Math.min(a.start, start), Math.max(a.end, end));
+    private Set mergeSets(Set a) {
+        int newStart = Math.min(a.start, start);
+        int newEnd = Math.max(a.end, end);
 
-        int counter = 0;
-        int nStart = n.findInArray(start).index;
-        int nEnd = n.findInArray(end).index;
-        for (int i = nStart; i < nEnd; i++){
-            n.array[i] |= array[counter];
-            counter++;
+        Set n = new Set(newStart, newEnd);
+
+        int thisStartIndex = n.findInArray(start).index;
+        int aStartIndex = n.findInArray(a.start).index;
+
+        for (int i = 0, nIndex = thisStartIndex; i < array.length; i++, nIndex++) {
+            n.array[nIndex] |= array[i];
         }
 
-        counter = 0;
-        int aStart = n.findInArray(a.start).index;
-        int aEnd = n.findInArray(a.end).index;
-        for (int i = aStart; i <= aEnd; i++){
-            n.array[i] |= a.array[counter];
-            counter++;
+        for (int i = 0, nIndex = aStartIndex; i < a.array.length; i++, nIndex++) {
+            n.array[nIndex] |= a.array[i];
         }
 
         return n;
     }
+
+//    private Set mergeSets(Set a){
+//        Set n = new Set(Math.min(a.start, start), Math.max(a.end, end));
+//
+//        int counter = 0;
+//        int nStart = n.findInArray(start).index;
+//        int nEnd = n.findInArray(end).index;
+//        for (int i = nStart; i < nEnd; i++){
+//            n.array[i] |= array[counter];
+//            counter++;
+//        }
+//
+//        counter = 0;
+//        int aStart = n.findInArray(a.start).index;
+//        int aEnd = n.findInArray(a.end).index;
+//        for (int i = aStart; i <= aEnd; i++){
+//            n.array[i] |= a.array[counter];
+//            counter++;
+//        }
+//
+//        return n;
+//    }
 }

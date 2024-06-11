@@ -4,8 +4,8 @@ import setManyToMany.ManyToMany;
 
 public class Main {
     public static void main(String[] args) {
-//        arr();
-//        list();
+        arr();
+        list();
 
 //        closed();
 //        opened();
@@ -16,97 +16,86 @@ public class Main {
     }
 
     public static void arr() {
-        Set stest = new Set(-1, 1);
-        stest.insert(-1);
-        stest.insert(1);
-        stest.print();
-        System.out.println();
+        Set set = new Set(0, 10);
+        set.insert(1);
+        set.insert(4);
+        set.insert(7);
 
-        Set s11 = new Set(-300, 200);
-        s11.insert(-210);
-        Set s22 = new Set(-15, 0);
-        s22.insert(0);
+        Set set1 = new Set(-10, 20);
+        set1.insert(2);
+        set1.insert(6);
+        set1.insert(7);
 
-        s11.print();
-        System.out.println();
+        Set set2 = new Set(10, 100);
+        set2.insert(10);
+        set2.insert(40);
+        set2.insert(70);
 
-        s22.print();
-        System.out.println();
+        System.out.print("union (set, set1): ");
+        set.union(set1).print();
+        System.out.print("diff (set, set1): ");
+        set.difference(set1).print();
+        System.out.print("intersection (set, set1): ");
+        set.intersection(set1).print();
+        System.out.print("merge (set, set2): ");
+        if (!set.equal(set2)) {
+            set.merge(set2).print();
+        }
+        System.out.print("min (set): ");
+        System.out.println(set.min());
+        System.out.print("max (set): ");
+        System.out.println(set.max());
+        System.out.print("find (7): ");
+        Set S = set.find(set1, 7);
+        if (S == set)
+            System.out.println("in A");
+        else if (S == set1)
+            System.out.println("in B");
+        else
+            System.out.println("No such element");
 
-        System.out.println("s33 = s11.merge(s22)");
-        Set s33 = s11.merge(s22);
-        s33.print();
-        System.out.println();
-
-        Set s44 = s33.difference(s11);
-        System.out.println("s44 = s33.difference(s11)");
-        s44.print();
-        System.out.println(s44.equal(s22));
-        System.out.println();
-
-
-        Set s1 = new Set(100, 300);
-        s1.insert(105);
-        s1.insert(106);
-        s1.insert(107);
-        s1.insert(109);
-        System.out.println("s1");
-        s1.print();
-        System.out.println();
-
-        Set s2 = new Set(50, 500);
-        s2.insert(106);
-
-        Set s4 = new Set(90, 1000);
-        s4.insert(101);
-        System.out.println("s4.equal(s2)");
-        System.out.println(s4.equal(s2));
-        System.out.println();
-
-        Set s3 = s1.difference(s2);
-        System.out.println("s1.difference(s2)");
-        s3.print();
         System.out.println();
     }
 
     public static void list() {
-        setCircularList.Set s = new setCircularList.Set();
-        setCircularList.Set s1 = new setCircularList.Set();
+        setCircularList.Set set = new setCircularList.Set(0, 10);
+        set.insert(1);
+        set.insert(4);
+        set.insert(7);
 
-        // 👍👍👍👍👍
-        s1.insert(-250);
-        s1.insert(-200);
-        s1.insert(2);
-        s1.insert(22);
-        s1.insert(-1);
-        s1.insert(-123);
-        s1.insert(124);
-        s1.print();
+        setCircularList.Set set1 = new setCircularList.Set(-10, 20);
+        set1.insert(2);
+        set1.insert(6);
+        set1.insert(7);
 
-        s.insert(2);
-        s.insert(-250);
-        s.insert(-1);
-        s.insert(0);
-        s.insert(-123);
-        s.insert(-124);
-        s.insert(124);
-        s.insert(455);
-        s.insert(123213);
-        s.print();
-        System.out.println();
+        setCircularList.Set set2 = new setCircularList.Set(10, 100);
+        set2.insert(10);
+        set2.insert(40);
+        set2.insert(70);
 
-        s.delete(-124);
-        s.print();
-        System.out.println();
+        System.out.print("union (set, set1): ");
+        set.union(set1).print();
+        System.out.print("diff (set, set1): ");
+        set.difference(set1).print();
+        System.out.print("intersection (set, set1): ");
+        set.intersection(set1).print();
+        System.out.print("merge (set, set2): ");
+        if (!set.equal(set2)) {
+            set.merge(set2).print();
+        }
+        System.out.print("min (set): ");
+        System.out.println(set.min());
+        System.out.print("max (set): ");
+        System.out.println(set.max());
+        System.out.print("find (7): ");
+        setCircularList.Set S = set.find(set1, 7);
+        if (S == set)
+            System.out.println("in A");
+        else if (S == set1)
+            System.out.println("in B");
+        else
+            System.out.println("No such element");
 
-        System.out.println("s.intersection(s1);");
-        setCircularList.Set i = s.intersection(s1);
-        i.print();
-        System.out.println();
-
-        System.out.println("s.union(s1);");
-        setCircularList.Set u = s.union(s1);
-        u.print();
         System.out.println();
     }
 

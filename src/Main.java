@@ -8,9 +8,9 @@ public class Main {
 //        list();
 
 //        closed();
-//        open();
+//        opened();
 
-        partiallyOrdered();
+//        partiallyOrdered();
 
 //        manyToMany();
     }
@@ -111,7 +111,7 @@ public class Main {
     }
 
     public static void closed() {
-        System.out.println("CLOSE");
+        System.out.println("CLOSED");
         dictionary d = new dictionary(50);
         dictionary d2 = new dictionary(50);
 
@@ -136,8 +136,8 @@ public class Main {
 //        d2.print();
         System.out.println();
     }
-    public static void open() {
-        System.out.println("OPEN");
+    public static void opened() {
+        System.out.println("OPENED");
         dictionaryOpenHashing.dictionary d = new dictionaryOpenHashing.dictionary(50);
         dictionaryOpenHashing.dictionary d2 = new dictionaryOpenHashing.dictionary(50);
 
@@ -145,23 +145,21 @@ public class Main {
         d.insert("sasha");
         d.print();
 
-        d2.insert("matvey");
-        d2.insert("sasha");
-        d2.print();
+//        d2.insert("matvey");
+//        d2.insert("sasha");
+//        d2.print();
 
         d.delete("matvey");
         d.delete("sasha");
 
-
         d.insert("matvey");
         d.insert("sasha");
 
-        d2.delete("matvey");
-        d2.delete("sasha");
+//        d2.delete("matvey");
+//        d2.delete("sasha");
 
         d.print();
-        d2.print();
-        System.out.println();
+//        d2.print();
     }
 
     public static void partiallyOrdered() {

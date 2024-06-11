@@ -9,12 +9,12 @@ public class dictionary {
     }
 
     public void insert(char[] name) {
-        int place = hashFunc(name, 0);
+        int place = hashFunc(name);
         int number = place;
         int counter = 0;
         int deleted = -1;
 
-        place = hashFunc(name, ++counter);
+        place = rehash(place, ++counter);
 
         while (place != number){
 
@@ -28,7 +28,7 @@ public class dictionary {
                 deleted = place;
             }
 
-            else place = hashFunc(name,++counter);
+            else place = rehash(place,++counter);
         }
 
         if (deleted != -1){
@@ -74,12 +74,16 @@ public class dictionary {
         }
     }
 
-    private int hashFunc(char[] name, int q) {
-        int sum = q;
+    private int hashFunc(char[] name) {
+        int sum = 0;
         for (int i = 0; i < name.length; i++){
             sum += name[i];
         }
         return sum % array.length;
+    }
+
+    private int rehash(int hashValue, int q) {
+        return (hashValue + q) % array.length;
     }
 
     private char[] convertStringToCharArray(String str){
@@ -121,16 +125,16 @@ public class dictionary {
     }
 
     private int search(char []name) {
-        int place = hashFunc(name, 0);
+        int place = hashFunc(name);
         int start = place;
         int counter = 0;
-        place = hashFunc(name, ++counter);
+        place = rehash(place, ++counter);
 
         while (array[place] != null && place != start){
             if (compareCharArrays(array[place], name)) {
                 return place;
             }
-            place = hashFunc(name, ++counter);
+            place = rehash(place, ++counter);
         }
 
         return -1;

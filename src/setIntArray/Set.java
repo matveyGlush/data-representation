@@ -11,25 +11,56 @@ public class Set {
         }
     }
     private static final int leftBit = 0b10000000000000000000000000000000;
-    private int[] array;
-    private int zeroPosition; //array index of zero
-    private int start, end;
+    private int[] array; // массив интов
+    private int zeroPosition; // позиция нуля
+    private int start, end; // границы
 
+
+    public int SetBit(int reg, int bit) {
+        reg |= (1<<bit); //поставить 1 в bit
+        return reg;
+    }
+
+    public int ClearBit(int reg, int bit) {
+        reg &= (~(1<<bit)); // поставить 0 в bit
+        return reg;
+    }
+
+    public int InvBit(int reg, int bit) { 
+        reg ^= (1<<bit); //инвертировать бит
+        return reg;
+    }
+    
+    public boolean BitIsSet(int reg, int bit) {
+        return ((reg & (1<<bit)) != 0); //проверить, стоит ли 1 в бите
+    }
+
+    public boolean BitIsClear(int reg, int bit) {
+        return ((reg & (1<<bit)) == 0); //проверить, стоит ли 0 в бите
+    }
+
+    // конструктор от границ
     public Set(int from, int to) {
-        if ((from == 0 && to == 0) || (from > to)) return;
+        // проверяем правильность ввода
+        if ((from == 0 && to == 0) || (from > to)) 
+            return;
         start = from;
         end = to;
 
         if (start < 0){
-            int negativeLen = start >= -31? 1 : start/32;
+            int negativeLen = start >= -31? -1 : start/32 - 1;
             int positiveLen = end <= 31 ? 0 : end/32;
             array = new int[Math.abs(negativeLen) + positiveLen + 1];
-            zeroPosition = array.length - (positiveLen > 0 ? positiveLen : 1);
+            zeroPosition = -negativeLen;
             return;
         }
 
-        array = new int[end/32 - start/32 +  1];
-        zeroPosition = -1;
+        zeroPosition = 0;
+        position p1 = findInArray(start);
+        position p2 = findInArray(end);
+
+        array = new int[p2.index - p1.index +  1];
+        zeroPosition = -p1.index;
     }
 
     public Set(Set a){
@@ -44,27 +75,40 @@ public class Set {
     }
 
     public void print(){
-        System.out.println("Zero at: " + zeroPosition);
-        System.out.println("Start: " + start + " | End: " + end);
-        for (int i = 0; i < array.length; i ++) {
-            if (array[i] == 0) System.out.print("0" + " ");
-            else System.out.print(String.format("%32s", Integer.toBinaryString(array[i])).replaceAll(" ", "0") + " ");
+       // System.out.println("Zero at: " + zeroPosition);
+       // System.out.println("Start: " + start + " , End: " + end);
+        /*for (int i = 0; i < array.length; i++) {
+            if (array[i] == 0) 
+                System.out.print("0" + " ");
+            else 
+                System.out.print(String.format("%32s", Integer.toBinaryString(array[i])).replaceAll(" ", "0") + " ");
+            
+        }*/
+        //System.out.println();
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < 32; j++)
+                if(BitIsSet(array[i], j)) {
+                    System.out.print((-zeroPosition + i) * 32 + j + " ");
+                }
+            
         }
+    
         System.out.println();
     }
 
     public void insert(int q){
         if (q < start || q > end) return;
         position p = findInArray(q);
-
-        array[p.index] |= leftBit >>> p.pos;
+        array[p.index] = SetBit(array[p.index], p.pos);
+        //array[p.index] |= leftBit >>> p.pos;
     }
 
     public void delete(int q){
         if (q < start || q > end) return;
         position p = findInArray(q);
 
-        array[p.index] &= ~(leftBit >>> p.pos);
+       
+        array[p.index] = ClearBit(array[p.index], p.pos);
     }
 
     public void assign(Set a){
@@ -79,13 +123,13 @@ public class Set {
     }
 
     public int min(){
-        for (int i = 0; i < array.length; i++){
+        for (int i = 0; i < array.length; i++) {
             if (array[i] != 0){
                 int mask;
                 for (int j = 0; j < 32; j++){
                     mask = leftBit >> j;
-                    if ((array[i] & mask) != 0){
-                        return (32 * i - (start > 0 ? 0 : start % 32) + j );
+                    if(BitIsSet(array[i], j)){
+                        return ((-zeroPosition + i) * 32 + j);
                     }
                 }
 
@@ -101,8 +145,8 @@ public class Set {
                 int maskCounter = 0;
                 for (int j = 31; j >= 0; j--) {
                     mask =  1 << maskCounter;
-                    if ((array[i] & mask) != 0){
-                        return (32 * i + j);
+                    if(BitIsSet(array[i], j)){
+                        return ((-zeroPosition + i) * 32 + j);
                     }
                     maskCounter++;
                 }
@@ -159,20 +203,21 @@ public class Set {
         if(isEmpty()) return false;
         if (q < start || q > end) return false;
         position p = findInArray(q);
-        return isTaken(p);
+        return BitIsSet(array[p.index], p.pos);
     }
 
     public Set find(Set a, int x){
-        if(isEmpty() || (x < start || x > end)){
+        if(!(isEmpty() || (x < start || x > end))){
             position p = findInArray(x);
-            if (isTaken(p)) {
+            if (BitIsSet(array[p.index], p.pos)) {
                 return this;
             }
         }
 
-        if(a.isEmpty() || (x < a.start || x > a.end)){
+        if(!(a.isEmpty() || (x < a.start || x > a.end))){
             position p = a.findInArray(x);
-            if (a.isTaken(p)) {
+            
+            if (a.BitIsSet(array[p.index], p.pos)) {
                 return a;
             }
         }
@@ -191,19 +236,24 @@ public class Set {
     }
 
     public Set intersection(Set a){
-        if (a == this) return new Set(a);
-        if (a.end < start || a.start > end) return null;
+        if (a == this) 
+            return new Set(a);
+        if (a.end < start || a.start > end) 
+            return null;
 
         int intersectionStart = Math.max(a.start, start);
         int intersectionEnd = Math.min(a.end, end);
 
         Set c = new Set(intersectionStart, intersectionEnd);
 
+        int firstNew = c.findInArray(c.start).index;
+        int lastNew = c.findInArray(c.end).index;
+
         int firstSetStart = findInArray(intersectionStart).index;
         int secondSetStart = a.findInArray(intersectionStart).index;
 
 
-        for (int i = intersectionStart; i <= intersectionEnd; i++){
+        for (int i = firstNew; i <= lastNew ; i++){
             c.array[i] = array[firstSetStart] & a.array[secondSetStart];
             firstSetStart++;
             secondSetStart++;
@@ -242,11 +292,6 @@ public class Set {
         return newSet;
     }
 
-    private boolean isTaken(position q){
-        int mask = leftBit >>> q.pos;
-        return !((array[q.index] & mask) == 0);
-    }
-
     public position findInArray(int q){
         //если старт в 0
         if (start == 0)
@@ -260,7 +305,7 @@ public class Set {
         }
 
         //если старт > 0
-        return new position((q - start) / 32, q%32);
+        return new position(q / 32 + zeroPosition, q%32);
     }
 
     private boolean isEmpty(){

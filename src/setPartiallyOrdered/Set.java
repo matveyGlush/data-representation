@@ -8,46 +8,24 @@ public class Set {
         head = null;
     }
 
-    public class Trail {
-        private SetElement id;
-        private Trail next;
+    private class Trail {
+        public SetElement id;
+        public Trail next;
 
         public Trail(SetElement i, Trail n){
             id = i;
             next = n;
         }
-
-        public Trail getNext() {
-            return next;
-        }
-
-        public SetElement getId() {
-            return id;
-        }
-
-        public void setId(SetElement id) {
-            this.id = id;
-        }
-
-        public void setNext(Trail next) {
-            this.next = next;
-        }
     }
 
-    public class SetElement extends Trail {
-        private final int key;
-        private int count;
+    private class SetElement extends Trail {
+        public final int key;
+        public int count;
 
         public SetElement(SetElement i, Trail n, int k, int c) {
             super(i, n);
             key = k;
             count = c;
-        }
-
-        public SetElement(int k, int id) {
-            super(null, null);
-            key = k;
-            count = 0;
         }
 
         public void increment(){
@@ -57,14 +35,6 @@ public class Set {
         public void decrement(){
             count--;
         }
-
-        public int getCount() {
-            return count;
-        }
-
-        public int getKey() {
-            return key;
-        }
     }
 
     public boolean init(Pair[] pair){
@@ -72,9 +42,9 @@ public class Set {
             return false;
 
         head = new SetElement(null,null, pair[0].key, 0);
-        head.setId(new SetElement(null, null, pair[0].dep, 0));
-        head.setNext(new Trail(head.getId(),null));
-        head.getId().increment();
+        head.id = new SetElement(null, null, pair[0].dep, 0);
+        head.next = new Trail(head.id,null);
+        head.id.increment();
         length++;
 
         for (int i = 1; i < pair.length; i++) {
@@ -83,23 +53,23 @@ public class Set {
             }
 
             SetElement temp1 = search(pair[i].key);
-            if (temp1.getKey() != pair[i].key) {
-                temp1.setId(new SetElement(null, null, pair[i].key, 0));
-                temp1 = temp1.getId();
+            if (temp1.key != pair[i].key) {
+                temp1.id = new SetElement(null, null, pair[i].key, 0);
+                temp1 = temp1.id;
                 length++;
             }
 
             SetElement temp2 = search(pair[i].dep);
-            if (temp2.getKey() != pair[i].dep){
-                temp2.setId(new SetElement(null, null, pair[i].dep, 0));
-                temp2 = temp2.getId();
+            if (temp2.key != pair[i].dep){
+                temp2.id = new SetElement(null, null, pair[i].dep, 0);
+                temp2 = temp2.id;
                 length++;
             }
 
             temp2.increment();
 
-            Trail tempTrail = temp1.getNext();
-            temp1.setNext(new Trail(temp2, tempTrail));
+            Trail tempTrail = temp1.next;
+            temp1.next = new Trail(temp2, tempTrail);
         }
         length++;
 
@@ -114,18 +84,18 @@ public class Set {
         SetElement lastInNewSet = null;
 
         while (q != null) {
-            if (q.getCount() == 0) {
+            if (q.count == 0) {
                 SetElement removedElement = removeElementWithZeroCount(q, q2);
                 checkSum++;
                 if (newSet.head != null) {
                     assert lastInNewSet != null;
-                    SetElement temp = lastInNewSet.getId();
-                    lastInNewSet.setId(removedElement);
-                    lastInNewSet.getId().setId(temp);
-                    lastInNewSet = lastInNewSet.getId();
+                    SetElement temp = lastInNewSet.id;
+                    lastInNewSet.id = removedElement;
+                    lastInNewSet.id.id = temp;
+                    lastInNewSet = lastInNewSet.id;
                 } else {
                     newSet.head = removedElement;
-                    newSet.head.setId(null);
+                    newSet.head.id = null;
                     lastInNewSet = newSet.head;
                 }
                 q = head;
@@ -133,7 +103,7 @@ public class Set {
                 continue;
             }
             q2 = q;
-            q = q.getId();
+            q = q.id;
         }
 
         if (newSet.head == null || checkSum != length) return false;
@@ -143,18 +113,18 @@ public class Set {
     }
 
     private SetElement removeElementWithZeroCount(SetElement q, SetElement q2) {
-        Trail tempTrail = q.getNext();
+        Trail tempTrail = q.next;
         while (tempTrail != null) {
-            tempTrail.getId().decrement();
-            tempTrail = tempTrail.getNext();
+            tempTrail.id.decrement();
+            tempTrail = tempTrail.next;
         }
-        q.setNext(null);
+        q.next = null;
 
         if (q == head) {
-            head = head.getId();
+            head = head.id;
         } else {
             assert q2 != null;
-            q2.setId(q.getId());
+            q2.id = q.id;
         }
 
         return q;
@@ -163,9 +133,9 @@ public class Set {
     public void print(){
         SetElement temp = head;
         while (temp != null){
-            System.out.print(temp.getKey());
+            System.out.print(temp.key);
             System.out.print(" ");
-            temp = temp.getId();
+            temp = temp.id;
         }
     }
 
@@ -174,11 +144,11 @@ public class Set {
         SetElement q2 = null;
 
         while (q != null){
-            if (p == q.getKey()) {
+            if (p == q.key) {
                 return q;
             }
             q2 = q;
-            q = q.getId();
+            q = q.id;
         }
         return q2;
     }

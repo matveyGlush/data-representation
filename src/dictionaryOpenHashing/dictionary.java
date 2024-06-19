@@ -1,94 +1,121 @@
 package dictionaryOpenHashing;
 
 public class dictionary {
-    private static class element {
+    private static class element{
         char[] name;
         element next;
 
-        private element(){
+        // конструктор
+        public element(){
             name = null;
             next = null;
         }
 
-        private element(char[] n, element nxt){
+        // конструктор
+        public element(char[] n, element nxt){
             next = nxt;
             name = new char[10];
-            copyCharArrays(n, name);
+            copy(n);
         }
 
-        private void setName(char[] n){
-            if (n == null){
-                name = null;
-                return;
-            }
-            copyCharArrays(n, name);
+        // копирующий конструктор
+        public element(char[] n){
+            name = new char[10];
+            copy(n);
         }
 
-        private static void copyCharArrays(char[] from, char[] to){
+        // копирование строк
+        public void copy(char[] from){
             for (int i = 0; i < from.length; i++){
-                to[i] = from[i];
+                name[i] = from[i];
             }
         }
 
-        private void printName(){
-            if (name == null) return;
-            int counter = 0;
+         // сравнение имён
+         private boolean equals(char[] b){
+            int i;
+            for (i = 0; name[i] != '\0' &&  b[i] != '\0'; i++){
+                if (name[i] != b[i])
+                    return false;
+                
+            }
+            if (name[i] != b[i])
+                return false;
+            return true;
+        }
+
+        // печать
+        public void printName(){
+            if (name == null) 
+                return;
             for (int i = 0; i < name.length; i++){
-                if (name[i] != '\u0000'){
+                if (name[i] != '\0'){
                     System.out.print(name[i]);
                 }
-                else counter ++;
+                else {
+                    System.out.println();
+                    return;
+                }
             }
-            if (counter != 10) System.out.println();
+            
         }
     }
 
+    // данные класса
     private final element[] array;
     private final int SIZE = 10;
 
+    // конструктор
     public dictionary(int a){
-        array = new element[a/ SIZE];
-        for (int i = 0; i < array.length; i++){
-            array[i] = new element();
-        }
+        array = new element[a / SIZE + 1];
     }
 
+    // метод вставки
     public void insert(char[] name) {
         int place = hashFunc(name);
 
-        if (array[place].name == null) {
-            array[place].name = new char[SIZE];
-            array[place].setName(name);
+        // проверяем первый элемент
+        if (array[place] == null) {
+            array[place] = new element(name);
             return;
         }
 
+        if (array[place].equals(name)) {
+            return;
+        }
+
+        // проверяем есть ли такой элемент
         if (searchPrev(name, place) == null) {
-            array[place].next = new element(name, array[place].next);
+            array[place] = new element(name, array[place]);
         }
     }
 
-    public void insert(String str){
-        if (str.length() > SIZE) return;
-        insert(convertStringToCharArray(str));
+    public void insert(String name) {
+        insert(convertStringToCharArray(name));
     }
 
+    // удаление
     public void delete(char[] name) {
+        // считаем хэш
         int place = hashFunc(name);
 
-        if (array[place].name == null) return;
+        if (array[place] == null) 
+            return;
 
-        if (compareCharArrays(array[place].name, name)){
+        // проверяем первый элемент
+        if (array[place].equals(name)){
+            // если 1 элемент
             if (array[place].next == null){
-                array[place].name = null;
+                array[place] = null;
             }
+            // если несколько
             else {
-                array[place].setName(array[place].next.name);
-                array[place].next = array[place].next.next;
+                array[place] = array[place].next;
             }
-
             return;
         }
 
+        // ищем предидущий и сдвигаем
         element temp = searchPrev(name, place);
         if (temp != null){
             temp.next = temp.next.next;
@@ -96,32 +123,28 @@ public class dictionary {
 
     }
 
-    public void delete(String str){
-        if (str.length() > SIZE) return;
-        delete(convertStringToCharArray(str));
+    public void delete(String name) {
+        delete(convertStringToCharArray(name));
     }
 
+    // проверяем наличие
     public boolean member(char[] name) {
         int place = hashFunc(name);
 
-        if (compareCharArrays(array[place].name, name))
+        if (array[place].equals(name))
             return true;
 
         return (searchPrev(name, place) != null);
     }
 
-    public boolean member(String str){
-        if (str.length() > SIZE) return false;
-        return member(convertStringToCharArray(str));
-    }
-
+    // зануление списка
     public void makeNull(){
         for (int i = 0; i < array.length; i++){
-            array[i].setName(null);
-            array[i].next = null;
+            array[i] = null;
         }
     }
 
+    // печать
     public void print(){
         for (int i = 0; i < array.length; i++){
             element q = array[i];
@@ -132,33 +155,37 @@ public class dictionary {
         }
     }
 
-    private int hashFunc(char[] name){
+    private int hash(char[] name){
         int sum = 0;
         for (int i = 0; i < name.length; i++){
             sum += name[i];
         }
-        return sum % array.length;
+        return sum;
     }
 
-    private boolean compareCharArrays(char[] a, char[] b){
-        for (int i = 0; i < SIZE; i++){
-            if (a[i] != b[i])
-                return false;
-        }
-        return true;
+    // считаем хэш
+    private int hashFunc(char[] name){
+        return hash(name) % array.length;
     }
 
     private char[] convertStringToCharArray(String str){
         char[] name = new char[SIZE];
-        element.copyCharArrays(str.toCharArray(), name);
+        copyCharArrays(str.toCharArray(), name);
         return name;
     }
 
+    private void copyCharArrays(char[] from, char[] to){
+        for (int i = 0; i < from.length; i++){
+            to[i] = from[i];
+        }
+    }
+
+    // поиск предшественника
     private element searchPrev(char[] name, int place){
         element q = array[place];
         element q2 = null;
         while (q != null){
-            if (compareCharArrays(q.name, name)) {
+            if (q.equals(name)) {
                 return q2;
             }
             q2 = q;

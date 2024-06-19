@@ -1,55 +1,51 @@
 package setIntArray;
 
 public class Set {
-    public static class position{
-        int index;
-        int pos;
+    // Внутренний класс для представления позиции в массиве
+    public static class position {
+        int index; // индекс в массиве
+        int pos;   // позиция внутри элемента массива (бит)
 
-        public position(int i, int p){
+        // Конструктор позиции
+        public position(int i, int p) {
             index = i;
             pos = p;
         }
     }
-    private static final int leftBit = 0b10000000000000000000000000000000;
-    private int[] array; // массив интов
+
+    // Константа для определения старшего бита
+    private int[] array; // массив для хранения множества
     private int zeroPosition; // позиция нуля
-    private int start, end; // границы
+    private int start, end; // границы множества
 
-
+    // Метод для установки бита в 1
     public int SetBit(int reg, int bit) {
-        reg |= (1<<bit); //поставить 1 в bit
+        reg |= (1 << bit); // устанавливаем 1 в позиции bit
         return reg;
     }
 
+    // Метод для установки бита в 0
     public int ClearBit(int reg, int bit) {
-        reg &= (~(1<<bit)); // поставить 0 в bit
+        reg &= (~(1 << bit)); // устанавливаем 0 в позиции bit
         return reg;
     }
 
-    public int InvBit(int reg, int bit) { 
-        reg ^= (1<<bit); //инвертировать бит
-        return reg;
-    }
-    
+    // Метод для проверки, установлен ли бит в 1
     public boolean BitIsSet(int reg, int bit) {
-        return ((reg & (1<<bit)) != 0); //проверить, стоит ли 1 в бите
+        return ((reg & (1 << bit)) != 0); // проверяем, установлен ли бит в 1
     }
 
-    public boolean BitIsClear(int reg, int bit) {
-        return ((reg & (1<<bit)) == 0); //проверить, стоит ли 0 в бите
-    }
-
-    // конструктор от границ
+    // Конструктор множества с указанием границ
     public Set(int from, int to) {
-        // проверяем правильность ввода
-        if ((from == 0 && to == 0) || (from > to)) 
-            return;
+        if ((from == 0 && to == 0) || (from > to))
+            return; // проверяем корректность границ
         start = from;
         end = to;
 
-        if (start < 0){
-            int negativeLen = start >= -31? -1 : start/32 - 1;
-            int positiveLen = end <= 31 ? 0 : end/32;
+        // Определяем размеры массива
+        if (start < 0) {
+            int negativeLen = start >= -31 ? -1 : start / 32 - 1;
+            int positiveLen = end <= 31 ? 0 : end / 32;
             array = new int[Math.abs(negativeLen) + positiveLen + 1];
             zeroPosition = -negativeLen;
             return;
@@ -58,136 +54,117 @@ public class Set {
         zeroPosition = 0;
         position p1 = findInArray(start);
         position p2 = findInArray(end);
-
-        array = new int[p2.index - p1.index +  1];
+        array = new int[p2.index - p1.index + 1];
         zeroPosition = -p1.index;
     }
 
-    public Set(Set a){
-        // копирующий конструктор
+    // Копирующий конструктор
+    public Set(Set a) {
         start = a.start;
         end = a.end;
         zeroPosition = a.zeroPosition;
         array = new int[a.array.length];
-        for (int i = 0; i < array.length; i ++){
-            array[i] = a.array[i];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = a.array[i]; // копируем элементы массива
         }
     }
 
-    public void print(){
-       // System.out.println("Zero at: " + zeroPosition);
-       // System.out.println("Start: " + start + " , End: " + end);
-        /*for (int i = 0; i < array.length; i++) {
-            if (array[i] == 0) 
-                System.out.print("0" + " ");
-            else 
-                System.out.print(String.format("%32s", Integer.toBinaryString(array[i])).replaceAll(" ", "0") + " ");
-            
-        }*/
-        //System.out.println();
+    // Метод для печати множества
+    public void print() {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < 32; j++)
-                if(BitIsSet(array[i], j)) {
-                    System.out.print((-zeroPosition + i) * 32 + j + " ");
+                if (BitIsSet(array[i], j)) {
+                    System.out.print((-zeroPosition + i) * 32 + j + " "); // выводим элементы множества
                 }
-            
         }
-    
         System.out.println();
     }
 
-    public void insert(int q){
-        if (q < start || q > end) return;
+    // Метод для вставки элемента в множество
+    public void insert(int q) {
+        if (q < start || q > end) return; // проверяем границы
         position p = findInArray(q);
-        array[p.index] = SetBit(array[p.index], p.pos);
-        //array[p.index] |= leftBit >>> p.pos;
+        array[p.index] = SetBit(array[p.index], p.pos); // вставляем элемент
     }
 
-    public void delete(int q){
-        if (q < start || q > end) return;
+    // Метод для удаления элемента из множества
+    public void delete(int q) {
+        if (q < start || q > end) return; // проверяем границы
         position p = findInArray(q);
-
-       
-        array[p.index] = ClearBit(array[p.index], p.pos);
+        array[p.index] = ClearBit(array[p.index], p.pos); // удаляем элемент
     }
 
-    public void assign(Set a){
-        if (this == a)
-            return;
+    // Метод для присваивания значения другому множеству
+    public void assign(Set a) {
+        if (this == a) return; // проверка на самоприсвоение
         start = a.start;
         end = a.end;
         zeroPosition = a.zeroPosition;
-
         array = new int[a.array.length];
-        for (int i = 0; i < array.length; i ++){
-            array[i] = a.array[i];
-        }
-    }
-
-    public int min(){
         for (int i = 0; i < array.length; i++) {
-            if (array[i] != 0){
-                int mask;
-                for (int j = 0; j < 32; j++){
-                    mask = leftBit >> j;
-                    if(BitIsSet(array[i], j)){
-                        return ((-zeroPosition + i) * 32 + j);
+            array[i] = a.array[i]; // копируем элементы массива
+        }
+    }
+
+    // Метод для нахождения минимального элемента в множестве
+    public int min() {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] != 0) { // ищем первый непустой элемент массива
+                for (int j = 0; j < 32; j++) {
+                    if (BitIsSet(array[i], j)) {
+                        return ((-zeroPosition + i) * 32 + j); // возвращаем минимальный элемент
                     }
                 }
-
             }
         }
         throw new myException("The set is empty");
     }
 
-    public int max(){
+    // Метод для нахождения максимального элемента в множестве
+    public int max() {
         for (int i = array.length - 1; i >= 0; i--) {
-            if (array[i] != 0) {
-                int mask;
-                int maskCounter = 0;
+            if (array[i] != 0) { // ищем последний непустой элемент массива
                 for (int j = 31; j >= 0; j--) {
-                    mask =  1 << maskCounter;
-                    if(BitIsSet(array[i], j)){
-                        return ((-zeroPosition + i) * 32 + j);
+                    if (BitIsSet(array[i], j)) {
+                        return ((-zeroPosition + i) * 32 + j); // возвращаем максимальный элемент
                     }
-                    maskCounter++;
                 }
             }
         }
         throw new myException("The set is empty");
     }
 
-    public boolean equal(Set a){
+    // Метод для проверки равенства двух множеств
+    public boolean equal(Set a) {
         if (a == null) throw new myException("");
-        if (a == this) return true;
+        if (a == this) return true; // проверка на самоприсвоение
 
         if (end < a.start || a.end < start)
-            return false;
+            return false; // проверка на пересечение границ
 
-        // проверка левой части на наличие нулей
-        // мы должны найти набор, который имеет более низкое начало
-        Set leftSet = start < a.start? this : a;
-        Set secondSet = start < a.start? a : this;
+        // Проверка левой части на наличие нулей
+        Set leftSet = start < a.start ? this : a;
+        Set secondSet = start < a.start ? a : this;
         int intersectionStart = leftSet.findInArray(secondSet.start).index;
-        for (int i = 0; i < intersectionStart; i++){
+        for (int i = 0; i < intersectionStart; i++) {
             if (leftSet.array[i] != 0)
                 return false;
         }
 
-        // проходим пересечение
+        // Проверка пересечения
         int secondSetIntersectionStart = 0;
         int intersectionEnd = secondSet.findInArray(Math.min(end, a.end)).index;
-        for (int i = intersectionStart; i <= intersectionEnd; i++){
+        for (int i = intersectionStart; i <= intersectionEnd; i++) {
             if (leftSet.array[i] != secondSet.array[secondSetIntersectionStart])
                 return false;
             secondSetIntersectionStart++;
         }
 
-        //проверка правой части массива
-        secondSet = end < a.end? a : this;
-        leftSet = end < a.end? this : a;
+        // Проверка правой части на наличие нулей
+        secondSet = end < a.end ? a : this;
+        leftSet = end < a.end ? this : a;
         intersectionEnd = secondSet.findInArray(leftSet.end).index;
-        for (int i = intersectionEnd + 1; i < secondSet.findInArray(end).index; i++){
+        for (int i = intersectionEnd + 1; i < secondSet.findInArray(end).index; i++) {
             if (secondSet.array[i] != 0)
                 return false;
         }
@@ -195,30 +172,32 @@ public class Set {
         return true;
     }
 
-    public void makeNull(){
-        for (int i = 0; i < array.length; i++){
-            array[i] = 0;
+    // Метод для очистки множества
+    public void makeNull() {
+        for (int i = 0; i < array.length; i++) {
+            array[i] = 0; // обнуляем элементы массива
         }
     }
 
-    public boolean member(int q){
-        if(isEmpty()) return false;
-        if (q < start || q > end) return false;
+    // Метод для проверки, является ли элемент членом множества
+    public boolean member(int q) {
+        if (isEmpty()) return false; // проверка на пустое множество
+        if (q < start || q > end) return false; // проверка границ
         position p = findInArray(q);
-        return BitIsSet(array[p.index], p.pos);
+        return BitIsSet(array[p.index], p.pos); // проверка, установлен ли бит
     }
 
-    public Set find(Set a, int x){
-        if(!(isEmpty() || (x < start || x > end))){
+    // Метод для нахождения элемента в двух множествах
+    public Set find(Set a, int x) {
+        if (!(isEmpty() || (x < start || x > end))) {
             position p = findInArray(x);
             if (BitIsSet(array[p.index], p.pos)) {
                 return this;
             }
         }
 
-        if(!(a.isEmpty() || (x < a.start || x > a.end))){
+        if (!(a.isEmpty() || (x < a.start || x > a.end))) {
             position p = a.findInArray(x);
-            
             if (a.BitIsSet(array[p.index], p.pos)) {
                 return a;
             }
@@ -227,96 +206,119 @@ public class Set {
         return null;
     }
 
-    public Set merge(Set a){
-        if (a == this) return new Set(a);
+    // Метод для объединения двух множеств
+    public Set merge(Set a) {
+        if (a == this) return new Set(a); // проверка на самоприсвоение
         return mergeSets(a);
     }
 
-    public Set union(Set a){
-        if (a == this) return new Set(a);
+    // Метод для объединения (объединение синоним merge)
+    public Set union(Set a) {
+        if (a == this) return new Set(a); // проверка на самоприсвоение
         return mergeSets(a);
     }
 
-    public Set intersection(Set a){
-        if (a == this) 
+    // Метод для пересечения двух множеств
+    public Set intersection(Set a) {
+        // Если переданное множество совпадает с текущим, создаем его копию
+        if (a == this)
             return new Set(a);
-        if (a.end < start || a.start > end) 
+
+        // Если множества не пересекаются, возвращаем null
+        if (a.end < start || a.start > end)
             return null;
 
+        // Определяем начало и конец пересечения
         int intersectionStart = Math.max(a.start, start);
         int intersectionEnd = Math.min(a.end, end);
 
+        // Создаем новое множество для пересечения с заданными границами
         Set c = new Set(intersectionStart, intersectionEnd);
 
+        // Находим индексы для начала и конца пересечения в новом множестве
         int firstNew = c.findInArray(c.start).index;
         int lastNew = c.findInArray(c.end).index;
 
+        // Находим индексы начала пересечения в текущем и переданном множествах
         int firstSetStart = findInArray(intersectionStart).index;
         int secondSetStart = a.findInArray(intersectionStart).index;
 
-
-        for (int i = firstNew; i <= lastNew ; i++){
+        // Выполняем пересечение множеств
+        for (int i = firstNew; i <= lastNew; i++) {
+            // Пересекаем элементы текущего множества и переданного множества
             c.array[i] = array[firstSetStart] & a.array[secondSetStart];
             firstSetStart++;
             secondSetStart++;
         }
 
+        // Возвращаем новое множество, содержащее пересечение
         return c;
     }
 
-    public Set difference(Set a){
+    // Метод для разности двух множеств
+    public Set difference(Set a) {
+        // Если переданное множество совпадает с текущим, создаем новое пустое множество
         if (a == this) return new Set(start, end);
 
+        // Создаем копию текущего множества
         Set newSet = new Set(this);
 
-        //если нет пересечения
-        if(end < a.start || a.end < start){
+        // Если множества не пересекаются, возвращаем копию текущего множества
+        if (end < a.start || a.end < start) {
             return newSet;
         }
 
+        // Определяем индекс начала пересечения в переданном множестве
         int secondSetStart;
         if (start <= a.start)
             secondSetStart = a.findInArray(a.start).index;
         else
             secondSetStart = a.findInArray(start).index;
 
+        // Определяем индекс конца пересечения
         int intersectionEnd;
         if (end <= a.end)
             intersectionEnd = findInArray(end).index;
         else
             intersectionEnd = findInArray(a.end).index;
 
-        for (int i = 0; i <= intersectionEnd && secondSetStart < a.array.length; i++){
+        // Выполняем разность множеств
+        for (int i = 0; i <= intersectionEnd && secondSetStart < a.array.length; i++) {
+            // Удаляем элементы переданного множества из текущего множества
             newSet.array[i] = array[i] & ~(a.array[secondSetStart]);
             secondSetStart++;
         }
 
+        // Возвращаем новое множество, содержащее разность
         return newSet;
     }
 
-    public position findInArray(int q){
-        //если старт в 0
+    // Метод для нахождения позиции элемента в массиве
+    public position findInArray(int q) {
+        // Если стартовая позиция равна 0
         if (start == 0)
             return new position(q / 32, q % 32);
 
-        //если старт меньше нуля
+        // Если стартовая позиция меньше нуля
         if (start < 0) {
             if (q < 0)
                 return new position(zeroPosition - Math.abs(q / 32) - 1, q % 32);
             else return new position(zeroPosition + q / 32, q % 32);
         }
 
-        //если старт > 0
-        return new position(q / 32 + zeroPosition, q%32);
+        // Если стартовая позиция больше 0
+        return new position(q / 32 + zeroPosition, q % 32);
     }
 
-    private boolean isEmpty(){
-        for (int i = 0; i < array.length; i++){
-            if (array[i] != 0) return false;
+    // Метод для проверки, является ли множество пустым
+    private boolean isEmpty() {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] != 0) return false; // проверка на пустоту массива
         }
         return true;
     }
 
+    // Метод для объединения массивов
     private Set mergeSets(Set a) {
         int newStart = Math.min(a.start, start);
         int newEnd = Math.max(a.end, end);
@@ -326,10 +328,12 @@ public class Set {
         int thisStartIndex = n.findInArray(start).index;
         int aStartIndex = n.findInArray(a.start).index;
 
+        // Объединение текущего множества
         for (int i = 0, nIndex = thisStartIndex; i < array.length; i++, nIndex++) {
             n.array[nIndex] |= array[i];
         }
 
+        // Объединение переданного множества
         for (int i = 0, nIndex = aStartIndex; i < a.array.length; i++, nIndex++) {
             n.array[nIndex] |= a.array[i];
         }

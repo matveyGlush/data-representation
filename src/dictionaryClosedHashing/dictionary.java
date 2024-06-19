@@ -1,89 +1,183 @@
 package dictionaryClosedHashing;
 
 public class dictionary {
-    private final char[][] array;
-    private final static int SIZE = 10;
 
-    public dictionary(int a){
-        array = new char[SIZE][];
+    private static class element {
+        char[] name;
+
+        // конструктор по имени
+        public element(char[] new_name) {
+            name = new char[new_name.length];
+            for (int i = 0; i < new_name.length; i++){
+                name[i] = new_name[i];
+            }
+        }
+
+        // проверка на удалённый элемент
+        public boolean isDeleted(){
+            return name[0] == '\0';
+        }
+
+        // сравнение имён
+        private boolean equals(char[] b){
+            int i;
+            for (i = 0; name[i] != '\0' &&  b[i] != '\0'; i++){
+                if (name[i] != b[i])
+                    return false;
+
+            }
+            if (name[i] != b[i])
+                return false;
+            return true;
+        }
+
+        //печать имени
+        private void print(){
+            if (name == null)
+                return;
+            if (name[0] == '\0')
+                return;
+
+            for (int i = 0; i < name.length; i++){
+                if (name[i] != '\0')
+                    System.out.print(name[i]);
+                else {
+                    System.out.println();
+                    return;
+                }
+            }
+        }
     }
 
+    // данные класса
+    private final element[] array;
+    private final static int SIZE = 15;
+
+    // конструктор
+    public dictionary(int a){
+        array = new element[a];
+    }
+
+    private int hash(char[] name) {
+        int sum = 0;
+
+        // находим сумму символов
+        for (int i = 0; i < name.length; i++){
+            sum += name[i];
+        }
+        return sum;
+    }
+
+    // считаем хэш
+    private int hashFunc(char[] name) {
+        // возвращаем остаток от деления на длину списка
+        return hash(name) % array.length;
+    }
+
+    // считаем хэш
+    private int hashFunc(int hash, int q) {
+        // возвращаем остаток от деления на длину списка
+        return (hash + q) % array.length;
+    }
+
+    // метод вставки
     public void insert(char[] name) {
-        int place = hashFunc(name);
-        int number = place;
+        // считаем хэш
+        int hash = hashFunc(name);
+        int place = hash;
+        int start = place;
+
         int counter = 0;
-        int deleted = -1;
+        int empty= -1;
 
-        place = hashFunc(place, ++counter);
+        // проверяем первый элемент, самый вероятный
+        if (array[place] == null) {
+            array[place] = new element(name);
+            return;
+        }
+        else if (array[place].equals(name))
+            return;
 
-        while (place != number){
+        place = hashFunc(hash, ++counter);
 
+        // идём до себя или до Null
+        while (place != start ){
+            // проверяем на NULL
             if (array[place] == null) {
-                array[place] = new char[SIZE];
-                copyCharArrays(name, array[place]);
-                return;
-            } // проверка на deleted должна быть после
-
-            if (deleted == -1 && isDeleted(array[place])){
-                deleted = place;
+                empty = place;
+                break;
             }
 
-            else place = hashFunc(place,++counter);
+            // проверяем на совпадение
+            if (array[place].equals(name))
+                return;
+
+            // если нашли первый удалённый, то запоминаем
+            if (empty == -1 && array[place].isDeleted()){
+                empty = place;
+            }
+
+            place = hashFunc(hash, ++counter);
         }
 
-        if (deleted != -1){
-            copyCharArrays(name, array[deleted]);
+        // вставляем в первый удалённый
+        if (empty != -1){
+            array[empty] = new element(name);
         }
     }
 
-    public void insert(String str) {
-        if (str.length() > SIZE) return;
-        insert(convertStringToCharArray(str));
+    public void insert(String name) {
+        insert(convertStringToCharArray(name));
     }
 
+    // метод поиска
+    private int search(char []name) {
+        int hash = hashFunc(name);
+        int place = hash;
+        int start = place;
+        int counter = 0;
+
+        // проверяем первый элемент, самый вероятный
+        if (array[place] == null)
+            return -1;
+        else if (array[place].equals(name))
+            return place;
+
+        place = hashFunc(hash, ++counter);
+
+        // проверяем остальное
+        while (array[place] != null || place != start){
+            if (array[place].equals(name)) {
+                return place;
+            }
+            place = hashFunc(hash, ++counter);
+        }
+
+        return -1;
+    }
+
+    // метод удаления элемента
     public void delete(char[] name) {
         int temp = search(name);
         if (temp != -1){
-            array[temp][0] = '\u0000';
+            array[temp].name[0] = '\0';
         }
     }
 
-    public void delete(String str) {
-        if (str.length() > SIZE) return;
-        delete(convertStringToCharArray(str));
+    public void delete(String name) {
+        delete(convertStringToCharArray(name));
     }
 
+    // метод проверки на членство
     public boolean member(char[] name) {
         return search(name) != -1;
     }
 
-    public boolean member(String str) {
-        if (str.length() > SIZE) return false;
-        return member(convertStringToCharArray(str));
-    }
-
+    // зануление множества
     public void makeNull() {
         for (int i = 0; i < array.length; i++){
             array[i] = null;
         }
-    }
-
-    public void print() {
-        for (int i = 0; i < array.length; i++){
-            printName(array[i]);
-        }
-    }
-
-    private int hashFunc(char[] name) {
-        int sum = 0;
-        for (int i = 0; i < name.length; i++){
-            sum += name[i];
-        }
-        return sum % array.length;
-    }
-
-    private int hashFunc(int hashValue, int q) {
-        return (hashValue + q) % array.length;
     }
 
     private char[] convertStringToCharArray(String str){
@@ -98,45 +192,13 @@ public class dictionary {
         }
     }
 
-    public boolean isDeleted(char[] a){
-        return a[0] == '\u0000';
-    }
-
-    private boolean compareCharArrays(char[] a, char[] b){
-        for (int i = 0; i < SIZE; i++){
-            if (a[i] != b[i])
-                return false;
-        }
-        return true;
-    }
-
-    private void printName(char[] name){
-        if (name == null) return;
-        if (name[0] == '\u0000') return;
-
-        int counter = 0;
-        for (int i = 0; i < name.length; i++){
-            if (name[i] != '\u0000'){
-                System.out.print(name[i]);
+    // вывод
+    public void print() {
+        for (int i = 0; i < array.length; i++){
+            if (array[i] != null) {
+                array[i].print();
             }
-            else counter ++;
         }
-        if (counter != 10) System.out.println();
     }
 
-    private int search(char []name) {
-        int place = hashFunc(name);
-        int start = place;
-        int counter = 0;
-        place = hashFunc(place, ++counter);
-
-        while (array[place] != null && place != start){
-            if (compareCharArrays(array[place], name)) {
-                return place;
-            }
-            place = hashFunc(place, ++counter);
-        }
-
-        return -1;
-    }
 }

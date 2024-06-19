@@ -1,7 +1,7 @@
 package dictionaryOpenHashing;
 
 public class dictionary {
-    private static class element{
+    private static class element {
         char[] name;
         element next;
 

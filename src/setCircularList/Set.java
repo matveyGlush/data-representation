@@ -34,7 +34,8 @@ public class Set {
 
     public void assign(Set a){
         // создаём хвост
-        copy(a);
+        if (this != a)
+            copy(a);
     }
 
     private void copy (Set a){
@@ -139,39 +140,17 @@ public class Set {
     
     //
     public int min(){
-        int min = Integer.MAX_VALUE;
-        if (tail == null) throw new myException("set is empty");
-
-        Node temp = tail.next;
-        while (temp != tail){
-            if (temp.number < min){
-                min = temp.number;
-            }
-            temp = temp.next;
-        }
-
-        return Math.min(min, tail.number);
+        return tail.next.number;
     }
 
     public int max(){
-        int max = Integer.MIN_VALUE;
-        if (tail == null) throw new myException("set is empty");
-
-        Node temp = tail.next;
-        while (temp != tail){
-            if (temp.number > max){
-                max = temp.number;
-            }
-            temp = temp.next;
-        }
-
-        return Math.max(max, tail.number);
+        return tail.number;
     }
 
     public void print(){
         if (tail == null) return;
         Node q = tail.next;
-        while (q != tail && q != null){
+        while (q != tail){
             System.out.print(q.number + " ");
             q = q.next;
         }

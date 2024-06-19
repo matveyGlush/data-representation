@@ -9,30 +9,30 @@ public class Set {
     }
 
     private class Trail {
-        public SetElement id;
-        public Trail next;
+        protected SetElement id;
+        protected Trail next;
 
-        public Trail(SetElement i, Trail n){
+        protected Trail(SetElement i, Trail n){
             id = i;
             next = n;
         }
     }
 
     private class SetElement extends Trail {
-        public final int key;
-        public int count;
+        protected final int key;
+        protected int count;
 
-        public SetElement(SetElement i, Trail n, int k, int c) {
+        protected SetElement(SetElement i, Trail n, int k, int c) {
             super(i, n);
             key = k;
             count = c;
         }
 
-        public void increment(){
+        protected void increment(){
             count++;
         }
 
-        public void decrement(){
+        protected void decrement(){
             count--;
         }
     }

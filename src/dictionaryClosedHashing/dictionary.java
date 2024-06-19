@@ -14,7 +14,7 @@ public class dictionary {
         int counter = 0;
         int deleted = -1;
 
-        place = rehash(place, ++counter);
+        place = hashFunc(place, ++counter);
 
         while (place != number){
 
@@ -22,13 +22,13 @@ public class dictionary {
                 array[place] = new char[SIZE];
                 copyCharArrays(name, array[place]);
                 return;
-            }
+            } // проверка на deleted должна быть после
 
             if (deleted == -1 && isDeleted(array[place])){
                 deleted = place;
             }
 
-            else place = rehash(place,++counter);
+            else place = hashFunc(place,++counter);
         }
 
         if (deleted != -1){
@@ -82,7 +82,7 @@ public class dictionary {
         return sum % array.length;
     }
 
-    private int rehash(int hashValue, int q) {
+    private int hashFunc(int hashValue, int q) {
         return (hashValue + q) % array.length;
     }
 
@@ -128,13 +128,13 @@ public class dictionary {
         int place = hashFunc(name);
         int start = place;
         int counter = 0;
-        place = rehash(place, ++counter);
+        place = hashFunc(place, ++counter);
 
         while (array[place] != null && place != start){
             if (compareCharArrays(array[place], name)) {
                 return place;
             }
-            place = rehash(place, ++counter);
+            place = hashFunc(place, ++counter);
         }
 
         return -1;

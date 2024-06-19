@@ -4,13 +4,13 @@ import setManyToMany.ManyToMany;
 
 public class Main {
     public static void main(String[] args) {
-        arr();
-        list();
+//        arr();
+//        list();
 
 //        closed();
 //        opened();
 
-//        partiallyOrdered();
+        partiallyOrdered();
 
 //        manyToMany();
     }
@@ -102,7 +102,7 @@ public class Main {
     public static void closed() {
         System.out.println("CLOSED");
         dictionary d = new dictionary(50);
-        dictionary d2 = new dictionary(50);
+//        dictionary d2 = new dictionary(50);
 
         d.insert("matvey");
         d.insert("sasha");
@@ -128,7 +128,7 @@ public class Main {
     public static void opened() {
         System.out.println("OPENED");
         dictionaryOpenHashing.dictionary d = new dictionaryOpenHashing.dictionary(50);
-        dictionaryOpenHashing.dictionary d2 = new dictionaryOpenHashing.dictionary(50);
+//        dictionaryOpenHashing.dictionary d2 = new dictionaryOpenHashing.dictionary(50);
 
         d.insert("matvey");
         d.insert("sasha");
@@ -168,6 +168,7 @@ public class Main {
                 new setPartiallyOrdered.Pair(7, 9),
                 new setPartiallyOrdered.Pair(9, 4),
                 new setPartiallyOrdered.Pair(9, 10),
+//                new setPartiallyOrdered.Pair(5, 6),
 
 
 //                new setPartiallyOrdered.Set.Pair(6, 123),

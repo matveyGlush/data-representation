@@ -17,8 +17,8 @@ public class Main {
         d.delete("matvey");
         d.delete("sasha");
 
-        d.insert("matvey");
         d.insert("sasha");
+        d.insert("matvey");
 
 //        d2.delete("matvey");
 //        d2.delete("sasha");

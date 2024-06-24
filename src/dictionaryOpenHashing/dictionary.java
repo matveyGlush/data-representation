@@ -168,18 +168,6 @@ public class dictionary {
         return hash(name) % array.length;
     }
 
-    private char[] convertStringToCharArray(String str){
-        char[] name = new char[SIZE];
-        copyCharArrays(str.toCharArray(), name);
-        return name;
-    }
-
-    private void copyCharArrays(char[] from, char[] to){
-        for (int i = 0; i < from.length; i++){
-            to[i] = from[i];
-        }
-    }
-
     // поиск предшественника
     private element searchPrev(char[] name, int place){
         element q = array[place];
@@ -193,5 +181,17 @@ public class dictionary {
         }
 
         return null;
+    }
+
+    private char[] convertStringToCharArray(String str){
+        char[] name = new char[SIZE];
+        copyCharArrays(str.toCharArray(), name);
+        return name;
+    }
+
+    private void copyCharArrays(char[] from, char[] to){
+        for (int i = 0; i < from.length; i++){
+            to[i] = from[i];
+        }
     }
 }

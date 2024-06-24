@@ -58,7 +58,7 @@ public class dictionary {
         array = new element[a];
     }
 
-    private int hash(char[] name) {
+    private int hashCode(char[] name) {
         int sum = 0;
 
         // находим сумму символов
@@ -71,7 +71,7 @@ public class dictionary {
     // считаем хэш
     private int hashFunc(char[] name) {
         // возвращаем остаток от деления на длину списка
-        return hash(name) % array.length;
+        return hashCode(name) % array.length;
     }
 
     // считаем хэш
@@ -88,6 +88,7 @@ public class dictionary {
         int start = place;
 
         int counter = 0;
+        int deleted= -1;
         int empty= -1;
 
         // проверяем первый элемент, самый вероятный
@@ -113,17 +114,17 @@ public class dictionary {
                 return;
 
             // если нашли первый удалённый, то запоминаем
-            if (empty == -1 && array[place].isDeleted()){
-                empty = place;
+            if (deleted == -1 && array[place].isDeleted()){
+                deleted = place;
             }
 
             place = hashFunc(hash, ++counter);
         }
 
         // вставляем в первый удалённый
-        if (empty != -1){
-            array[empty] = new element(name);
-        }
+        if (deleted != -1){
+            array[deleted] = new element(name);
+        } else array[empty] = new element(name);
     }
 
     public void insert(String name) {

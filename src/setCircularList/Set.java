@@ -380,6 +380,7 @@ public class Set {
             temp = temp.next;
         }
 
+
         if (head1.number != resultSet.tail.number) {
             temp.next = new Node(head1.number, resultSet.tail);
             temp = temp.next;

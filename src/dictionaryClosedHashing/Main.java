@@ -7,7 +7,7 @@ public class Main {
 //        dictionary d2 = new dictionary(50);
 
         d.insert("matvey");
-        d.insert("sasha");
+        d.insert("yatvem");
         d.print();
 
 //        d2.insert("matvey");
@@ -15,10 +15,10 @@ public class Main {
 //        d2.print();
 
         d.delete("matvey");
-        d.delete("sasha");
+        d.delete("yatvem");
 
+        d.insert("yatvem");
         d.insert("matvey");
-        d.insert("sasha");
 
 //        d2.delete("matvey");
 //        d2.delete("sasha");
